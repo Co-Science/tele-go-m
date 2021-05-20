@@ -30,15 +30,7 @@
 
 ## Telegram 
 
-### Server
-
-- [telegramd](https://github.com/nebula-chat/telegramd)
-
-
-### Database
-
-- [tdlib](https://github.com/tdlib/td)
-
-### Translate
-
-- [webhook2telegram](https://github.com/muety/webhook2telegram)
+Server | [telegramd](https://github.com/nebula-chat/telegramd)
+:-------|:---------
+Database | [tdlib](https://github.com/tdlib/td)
+Translate | [webhook2telegram](https://github.com/muety/webhook2telegram)
