@@ -31,8 +31,6 @@ func parseIncomingRequest(r *http.Response) (*Result, error) {
 
 	var result Result
 
-	fmt.Println(r.Body)
-
 	if err := json.NewDecoder(r.Body).Decode(&result); err != nil {
 		log.Printf("Error in decoding messages")
 
@@ -59,5 +57,5 @@ func main() {
 		fmt.Println("Error in parsing retreived data!")
 	}
 
-	fmt.Println(parsedData.Response.Message.text)
+	fmt.Println(parsedData.Response.Message)
 }
