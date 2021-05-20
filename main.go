@@ -1,47 +1,63 @@
 package main
 
 import (
-	"fmt"
-	"log"
 	"encoding/json"
 	"errors"
+	"fmt"
+	"log"
 	"net/http"
-	"net/url"
 )
 
+type Result struct {
+	Response Response `json:"result"`
+}
+
 type Response struct {
-	update_id int 'json:"update_id"'
-	message []Message 'json:"message"'
+	update_id int `json:"update_id"`
+	Message Message `json:"message"`
 }
 
 type Message struct {
-	message_id int 'json:"message_id"'
-	
+	message_id int `json:"message_id"`
+	Chat Chat `json:"chat"`
+	text string `json:"text"`
 }
 
-type From struct {
-	username string 'json:"username"'
+type Chat struct {
+	username string `json:"username"`
 }
 
-func parseIncomingRequest(r *http.Request) (*Update, error) {
+func parseIncomingRequest(r *http.Response) (*Result, error) {
 
-	var response Response
+	var result Result
 
-	if err := json.NewDecoder(r.Body).Decode(&response); err != nil {
+	fmt.Println(r.Body)
+
+	if err := json.NewDecoder(r.Body).Decode(&result); err != nil {
 		log.Printf("Error in decoding messages")
 
 		return nil, err
 	}
 
-	if response.update_id == 0 {
+	if result.Response.update_id == 0 {
 		log.Printf("invalid update_id, got update id = 0")
-		return nil, errors.New("Server Error")
+		return nil, errors.New("SERVER ERROR")
 	}
 
-	return &update, nil
+	return &result, nil
 }
 
 func main() {
 
+	httpreq, err := http.Get("https://api.telegram.org/bot1815331593:AAGM_U2Dw5KxQo3rjTIajSesZvfcj9r_iYw/getUpdates?limit=1")
+	if err != nil {
+		log.Printf("Error in rerieving request")
+	}
+	
+	parsedData, err := parseIncomingRequest(httpreq)
+	if err != nil {
+		fmt.Println("Error in parsing retreived data!")
+	}
 
+	fmt.Println(parsedData.Response.Message.text)
 }
