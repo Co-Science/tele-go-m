@@ -31,7 +31,6 @@ func main() {
 	//Convert the body to type string
    sb := "["+string(body)+"]"
 
-//sb := "[{\"ok\": true}]"
    fmt.Println(sb)
    bytes := []byte(sb)
  	
