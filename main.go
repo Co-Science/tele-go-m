@@ -17,7 +17,7 @@ type k struct {
 
 func main() {
 
-	url := "https://raw.githubusercontent.com/Co-Science/tele-go-m/Joel-Nickson-patch-1/test.json"
+	url := "https://raw.githubusercontent.com/Co-Science/tele-go-m/json-to-go/test.json"
 
 	resp, err := http.Get(url)
 	if err != nil {
