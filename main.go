@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -8,6 +9,25 @@ import (
 
 	"github.com/buger/jsonparser"
 )
+
+func sendMessages(message string) (error){
+
+	url := fmt.Sprintf("https://api.telegram.org/bot<token>/sendMessage?chat_id=856051391&text=%s", message)
+
+	httpSend, err := http.Get(url)
+	if err != nil {
+		return errors.New("request failed")
+	}
+
+	httpSendBody, _ := ioutil.ReadAll(httpSend.Body)
+
+	success, _ := jsonparser.GetString(httpSendBody, "ok")
+	if success != "true" {
+		return errors.New("could not send messages")
+	} else {
+		return nil
+	}
+}
 
 func parseIncomingRequest(httpResp *http.Response) (string, error) {
 
@@ -26,7 +46,7 @@ func parseIncomingRequest(httpResp *http.Response) (string, error) {
 
 func main() {
 
-	httpreq, err := http.Get("https://api.telegram.org/bot1815331593:AAGM_U2Dw5KxQo3rjTIajSesZvfcj9r_iYw/getUpdates?limit=1")
+	httpreq, err := http.Get("https://api.telegram.org/bot<token>/getUpdates?limit=1")
 	if err != nil {
 		log.Printf("Error in rerieving request")
 	}
@@ -37,4 +57,6 @@ func main() {
 	}
 
 	fmt.Println(parsedData)
+
+	sendMessages(parsedData)
 }
