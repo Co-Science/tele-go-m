@@ -1,48 +1,40 @@
 package main
 
 import (
-	"encoding/json"
-	// "errors"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
-	"io/ioutil"
+
+	"github.com/buger/jsonparser"
 )
 
-type k struct {
-	// this must always start in capital case to export as json
-	Ok bool `json:"ok"`
-}
+func parseIncomingRequest(httpResp *http.Response) (string, error) {
 
+	bodyBytes, err := ioutil.ReadAll(httpResp.Body)
+	if err != nil {
+		panic(err)
+	}
+
+	body, err := jsonparser.GetString(bodyBytes, "result", "[0]", "message", "text")
+	if err != nil {
+		log.Fatal("Error in parsing data")
+	}
+
+	return body, nil
+}
 
 func main() {
 
-	url := "https://raw.githubusercontent.com/Co-Science/tele-go-m/json-to-go/test.json"
-
-	resp, err := http.Get(url)
+	httpreq, err := http.Get("https://api.telegram.org/bot1815331593:AAGM_U2Dw5KxQo3rjTIajSesZvfcj9r_iYw/getUpdates?limit=1")
 	if err != nil {
-	   log.Fatalln(err)
+		log.Printf("Error in rerieving request")
+	}
+	
+	parsedData, err := parseIncomingRequest(httpreq)
+	if err != nil {
+		fmt.Println("Error in parsing retreived data!")
 	}
 
-	 body, err := ioutil.ReadAll(resp.Body)
-   if err != nil {
-      log.Fatalln(err)
-   }
-	//Convert the body to type string
-   sb := "["+string(body)+"]"
-
-   fmt.Println(sb)
-   bytes := []byte(sb)
- 	
-   var json_in_go []k
-   json.Unmarshal(bytes, &json_in_go)
-
-
-   fmt.Println(json_in_go)
-   for l := range json_in_go {
-        fmt.Printf("Id = %v ", json_in_go[l].Ok)
-        fmt.Println()
-    }
-
-fmt.Println("\n\n:)")
+	fmt.Println(parsedData)
 }
