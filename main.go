@@ -1,138 +1,69 @@
 package main
 
 import (
-	"bufio"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
-	"os"
 	"strings"
-
-	"github.com/buger/jsonparser"
 )
 
-type JsonToGo struct {
-	Ok     bool     `json:"ok"`
-	Result []Result `json:"result"`
-}
-type From struct {
-	ID           int    `json:"id"`
-	IsBot        bool   `json:"is_bot"`
-	FirstName    string `json:"first_name"`
-	LastName     string `json:"last_name"`
-	Username     string `json:"username"`
-	LanguageCode string `json:"language_code"`
-}
-type Chat struct {
-	ID                          int    `json:"id"`
-	Title                       string `json:"title"`
-	Type                        string `json:"type"`
-	AllMembersAreAdministrators bool   `json:"all_members_are_administrators"`
-}
-type Message struct {
-	MessageID    int    `json:"message_id"`
-	From         From   `json:"from"`
-	Chat         Chat   `json:"chat"`
-	Date         int    `json:"date"`
-	NewChatTitle string `json:"new_chat_title"`
-}
-type Result struct {
-	UpdateID int     `json:"update_id"`
-	Message  Message `json:"message"`
+var token, chat_id string
+
+type webhookReqBody struct {
+	Message struct {
+		Text string `json:"text"`
+		Chat struct {
+			ID int64 `json:"id"`
+		} `json:"chat"`
+	} `json:"message"`
 }
 
-func sendMessages(message string, token string, chat_id string) error {
+func Handler(res http.ResponseWriter, req *http.Request) {
+	body := &webhookReqBody{}
+	if err := json.NewDecoder(req.Body).Decode(body); err != nil {
+		fmt.Println("could not decode request body", err)
+		return
+	}
+	if !strings.ContainsAny(strings.ToLower(body.Message.Text), "telegom") {
+		return
+	}
+	if err := sayHello(fmt.Sprint(body.Message.Chat.ID)); err != nil {
+		fmt.Println("error in sending reply:", err)
+		return
+	}
+	fmt.Println("reply sent")
+}
 
-	url := fmt.Sprintf("https://api.telegram.org/bot"+token+"/sendMessage?chat_id="+chat_id+"&text=%s", message)
+type sendMessageReqBody struct {
+	ChatID int64  `json:"chat_id"`
+	Text   string `json:"text"`
+}
 
-	httpSend, err := http.Get(url)
+func sayHello(chatID string) error {
+	res, err := http.Get(fmt.Sprintf("https://api.telegram.org/bot%s/sendMessage?chat_id=%s&text=%s", token, chatID, "hello"))
 	if err != nil {
-		return errors.New("request failed")
+		return err
 	}
-
-	httpSendBody, _ := ioutil.ReadAll(httpSend.Body)
-
-	success, _ := jsonparser.GetString(httpSendBody, "ok")
-	if success != "true" {
-		return errors.New("could not send messages")
-	} else {
-		return nil
+	if res.StatusCode != http.StatusOK {
+		return errors.New("unexpected status" + res.Status)
 	}
+	return nil
 }
 
-func parseIncomingRequest(httpResp *http.Response) {
+func fileReader(filename string) {
 
-	bodyBytes, err := ioutil.ReadAll(httpResp.Body)
+	data, err := ioutil.ReadFile(filename)
 	if err != nil {
-		panic(err)
+		fmt.Println("File reading error", err)
+		return
 	}
-
-	sb := "[" + string(bodyBytes) + "]"
-
-	fmt.Println(sb)
-	bytes := []byte(sb)
-
-	var json_in_go []JsonToGo
-	json.Unmarshal(bytes, &json_in_go)
-
-	fmt.Println(json_in_go)
-	for _, v := range json_in_go {
-		fmt.Printf("\nId = %v \n", v)
-		for j, v := range v.Result {
-			fmt.Printf("unk= %v,%v \n", j, v)
-		}
-		fmt.Println()
-	}
-
-}
-
-func fileReader(filename string) []string {
-	file, err := os.Open(filename)
-
-	if err != nil {
-		log.Fatalf("failed to open")
-
-	}
-	scanner := bufio.NewScanner(file)
-
-	scanner.Split(bufio.ScanLines)
-	var text []string
-
-	for scanner.Scan() {
-		text = append(text, scanner.Text())
-	}
-
-	file.Close()
-
-	secreats := make([]string, 2)
-	for i, each_ln := range text {
-		secreats[i] = strings.Split(each_ln, "=")[1]
-	}
-	return secreats
+	token = fmt.Sprint(strings.Split(string(data), "=")[1])
 }
 
 func main() {
-
-	secreats := fileReader("env.txt")
-	token, chat_id := secreats[0], secreats[1]
-	fmt.Println(token, chat_id)
-
-	httpreq, err := http.Get("https://api.telegram.org/bot" + token + "/getUpdates?limit=1")
-	if err != nil {
-		log.Printf("Error in rerieving request")
-	}
-
-	parseIncomingRequest(httpreq)
-
-	// parsedData, err := parseIncomingRequest(httpreq)
-	if err != nil {
-		fmt.Println("Error in parsing retreived data!")
-	}
-
-	// fmt.Println(parsedData)
-
-	sendMessages("hello", token, chat_id)
+	fileReader("env.txt")
+	fmt.Println(token)
+	http.ListenAndServe(":3000", http.HandlerFunc(Handler))
 }
