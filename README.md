@@ -36,7 +36,7 @@ https://api.telegram.org/bot<your_bot_token>/deleteWebhook
 
 ## Starts what are they?
 
-![starts_in_github](./Resources/img/starts.png)
+![stars_in_github](./Resources/img/starts.png)
 
 Starts are the way to determine the popularity of a repo.
 
