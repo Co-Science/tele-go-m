@@ -34,7 +34,7 @@ __Congratss__ Your bot is not ready to chat with you. Just type telegom or any l
 https://api.telegram.org/bot<your_bot_token>/deleteWebhook
 ```
 
-## Starts what are they?
+## Star's what are they?
 
 ![stars_in_github](./Resources/img/starts.png)
 
