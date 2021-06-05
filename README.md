@@ -33,3 +33,11 @@ __Congratss__ Your bot is not ready to chat with you. Just type telegom or any l
 ```
 https://api.telegram.org/bot<your_bot_token>/deleteWebhook
 ```
+
+## Starts what are they?
+
+![starts_in_github](./Resources/img/starts.png)
+
+Starts are the way to determine the popularity of a repo.
+
+Dont forget to ⭐ us if you like what u see 😉
