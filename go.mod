@@ -1,3 +1,3 @@
 module github.com/Co-Science/tele-go-m
 
-go 1.15
+go 1.16
