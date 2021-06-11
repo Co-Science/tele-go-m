@@ -62,7 +62,7 @@ func sayHello(chatID string) error {
 
 func main() {
 
-	err := godotenv.Load(".env")
+	err := godotenv.Load("env.txt")
 	if err != nil {
 		panic(err)
 	}
