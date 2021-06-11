@@ -67,7 +67,7 @@ func main() {
 		panic(err)
 	}
 
-	token := os.Getenv("TOKEN")
+	token = os.Getenv("TOKEN")
 
 	fmt.Println(token)
 	http.ListenAndServe(":3000", http.HandlerFunc(Handler))
