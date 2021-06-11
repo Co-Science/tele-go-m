@@ -4,9 +4,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	// "io/ioutil"
 	"net/http"
+	"os"
 	"strings"
+
+	"github.com/joho/godotenv"
 )
 
 var token, chat_id string
@@ -47,18 +50,25 @@ func sayHello(chatID string) error {
 	return nil
 }
 
-func fileReader(filename string) {
+// func fileReader(filename string) {
 
-	data, err := ioutil.ReadFile(filename)
-	if err != nil {
-		fmt.Println("File reading error", err)
-		return
-	}
-	token = fmt.Sprint(strings.Split(string(data), "=")[1])
-}
+// 	data, err := ioutil.ReadFile(filename)
+// 	if err != nil {
+// 		fmt.Println("File reading error", err)
+// 		return
+// 	}
+// 	token = fmt.Sprint(strings.Split(string(data), "=")[1])
+// }
 
 func main() {
-	fileReader("env.txt")
+
+	err := godotenv.Load(".env")
+	if err != nil {
+		panic(err)
+	}
+
+	token := os.Getenv("TOKEN")
+
 	fmt.Println(token)
 	http.ListenAndServe(":3000", http.HandlerFunc(Handler))
 }
