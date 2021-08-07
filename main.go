@@ -2,73 +2,81 @@ package main
 
 import (
 	"encoding/json"
+	"log"
+	"net/http"
 	"errors"
 	"fmt"
-	// "io/ioutil"
-	"net/http"
-	"os"
-	"strings"
-
-	"github.com/joho/godotenv"
+	"time"
 )
 
-var token, chat_id string
+/////  Struct for parsing incoming messages  ////
 
-type webhookReqBody struct {
-	Message struct {
-		Text string `json:"text"`
-		Chat struct {
-			ID int64 `json:"id"`
-		} `json:"chat"`
-	} `json:"message"`
+type Update struct {
+	UpdateId int `json:"update_id"`
+	Message Message `json:"message"`
 }
 
-func Handler(res http.ResponseWriter, req *http.Request) {
-	body := &webhookReqBody{}
-	if err := json.NewDecoder(req.Body).Decode(body); err != nil {
-		fmt.Println("could not decode request body", err)
-		return
-	}
-	if !strings.ContainsAny(strings.ToLower(body.Message.Text), "telegom") {
-		return
-	}
-	if err := sayHello(fmt.Sprint(body.Message.Chat.ID)); err != nil {
-		fmt.Println("error in sending reply:", err)
-		return
-	}
-	fmt.Println("reply sent")
+type Message struct {
+	Text string `json:"text"`
+	Chat Chat `json:"chat"`
 }
 
-func sayHello(chatID string) error {
-	res, err := http.Get(fmt.Sprintf("https://api.telegram.org/bot%s/sendMessage?chat_id=%s&text=%s", token, chatID, "hello"))
+type Chat struct {
+	Id int `json:"id"`
+}
+
+/////  Struct for parsing incoming messages  ////
+
+////  Variables Required  /////
+
+const Token string = "1815331593:AAGM_U2Dw5KxQo3rjTIajSesZvfcj9r_iYw" // invalid bot token, CHANGE!!
+const baseUrl string = "https://api.telegram.org/bot"
+
+////  Variables Required  /////
+
+
+func tt() string {
+
+	var response string = "TT is up and ready on a "
+
+	if string(time.Now().Weekday()) == "Saturday" {
+		response += "Monday"
+	}
+	return response
+}
+
+// Function to decode the incoming json and extract chat text from it
+func parseConversation(r *http.Request) (*Update, error) {
+	var update Update
+
+	if err := json.NewDecoder(r.Body).Decode(&update); err != nil {
+		log.Printf("Decoding error, %s", err.Error())
+		return nil, err
+	}
+
+	if update.UpdateId == 0 {
+		log.Printf("Invalid Update ID!")
+		return nil, errors.New("Invalid Update ID")
+	}
+
+	return &update, nil
+}
+
+// function to receive and handle webhooks, calls parseConversation
+// and directs the reply
+func handleWebhooks(w http.ResponseWriter, r *http.Request) {
+	update, err := parseConversation(r)
 	if err != nil {
-		return err
+		log.Printf("Error in parsing update, %s", err.Error())
+		return
 	}
-	if res.StatusCode != http.StatusOK {
-		return errors.New("unexpected status" + res.Status)
+
+	if update.Message.Text == "/tt" {
+		fmt.Println(tt())
 	}
-	return nil
 }
-
-// func fileReader(filename string) {
-
-// 	data, err := ioutil.ReadFile(filename)
-// 	if err != nil {
-// 		fmt.Println("File reading error", err)
-// 		return
-// 	}
-// 	token = fmt.Sprint(strings.Split(string(data), "=")[1])
-// }
 
 func main() {
-
-	err := godotenv.Load("env.txt")
-	if err != nil {
-		panic(err)
-	}
-
-	token = os.Getenv("TOKEN")
-
-	fmt.Println(token)
-	http.ListenAndServe(":3000", http.HandlerFunc(Handler))
+	fmt.Println("Listening on port 8080 ....")
+	http.ListenAndServe(":8080", http.HandlerFunc(handleWebhooks))
 }
