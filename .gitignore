@@ -1,3 +1,5 @@
 .env
 env.txt
 .vscode
+.docker_build/
+bin/
