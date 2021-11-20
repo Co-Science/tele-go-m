@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"strings"
 )
 
@@ -68,7 +69,7 @@ func main() {
 	// if err != nil {
 	// 	fmt.Println(err)
 	// }
-	// TOKEN = os.Getenv("TOKEN")
+	TOKEN = os.Getenv("TOKEN")
 
 	// // or uncomment for local development [any one of the two]
 	// err := fileReader(".env")
@@ -77,5 +78,5 @@ func main() {
 	// 	return
 	// }
 	fmt.Println(TOKEN)
-	http.ListenAndServe(":443", http.HandlerFunc(Handler))
+	http.ListenAndServe(":8000", http.HandlerFunc(Handler))
 }
