@@ -63,13 +63,14 @@ func main() {
 	// 	fmt.Println(err)
 	// }
 	TOKEN = os.Getenv("TOKEN")
+	PORT := os.Getenv("PORT")
 
 	fmt.Println(TOKEN)
 
 	r := mux.NewRouter()
 	r.HandleFunc("/", Handler)
 
-	log.Fatal(http.ListenAndServe(":8000", r))
+	log.Fatal(http.ListenAndServe(":"+PORT, r))
 
 	// http.ListenAndServe(":8000", http.HandlerFunc(Handler))
 }
