@@ -43,6 +43,12 @@ https://api.telegram.org/bot<your_bot_token>/setWebhook?url=<your_https_url_ngro
 
 __Congratss__ Your bot is not ready to chat with you. Just type telegom or any letter in it and the bot replies with hello.
 
+- To remove the webhook url just type 
+
+```
+https://api.telegram.org/bot<your_bot_token>/deleteWebhook
+```
+
 <!--END_SECTION:waka-->
 </details>	
 
