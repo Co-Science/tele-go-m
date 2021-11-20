@@ -17,13 +17,15 @@ type webhookReqBody struct {
 	Message struct {
 		Text string `json:"text"`
 		Chat struct {
-			ID int64 `json:"id"`
+			ID        int64  `json:"id"`
+			Username  string `json:"username"`
+			Firstname string `json:"first_name"`
 		} `json:"chat"`
 	} `json:"message"`
 }
 
-func sayHello(chatID string) error {
-	url := fmt.Sprintf("https://api.telegram.org/bot%s/sendMessage?chat_id=%s&text=%s", TOKEN, chatID, "hello")
+func sayHello(chatID, user string) error {
+	url := fmt.Sprintf("https://api.telegram.org/bot%s/sendMessage?chat_id=%s&text=%s", TOKEN, chatID, "hello "+user)
 	res, err := http.Get(url)
 	if err != nil {
 		return err
@@ -43,7 +45,7 @@ func Handler(res http.ResponseWriter, req *http.Request) {
 	if !strings.ContainsAny(strings.ToLower(body.Message.Text), "telegom") {
 		return
 	}
-	err := sayHello(fmt.Sprint(body.Message.Chat.ID))
+	err := sayHello(fmt.Sprint(body.Message.Chat.ID), body.Message.Chat.Firstname)
 	if err != nil {
 		fmt.Println("error in sending reply:", err)
 		return
