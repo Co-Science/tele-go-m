@@ -4,23 +4,34 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	// "io/ioutil"
+	"io/ioutil"
 	"net/http"
-	"os"
 	"strings"
-
-	"github.com/joho/godotenv"
 )
 
-var token, chat_id string
+var TOKEN string
 
 type webhookReqBody struct {
 	Message struct {
 		Text string `json:"text"`
 		Chat struct {
-			ID int64 `json:"id"`
+			ID        int64  `json:"id"`
+			Username  string `json:"username"`
+			Firstname string `json:"first_name"`
 		} `json:"chat"`
 	} `json:"message"`
+}
+
+func sayHello(chatID, user string) error {
+	url := fmt.Sprintf("https://api.telegram.org/bot%s/sendMessage?chat_id=%s&text=%s", TOKEN, chatID, "hello "+user)
+	res, err := http.Get(url)
+	if err != nil {
+		return err
+	}
+	if res.StatusCode != http.StatusOK {
+		return errors.New("unexpected status" + res.Status)
+	}
+	return nil
 }
 
 func Handler(res http.ResponseWriter, req *http.Request) {
@@ -32,43 +43,38 @@ func Handler(res http.ResponseWriter, req *http.Request) {
 	if !strings.ContainsAny(strings.ToLower(body.Message.Text), "telegom") {
 		return
 	}
-	if err := sayHello(fmt.Sprint(body.Message.Chat.ID)); err != nil {
+	err := sayHello(fmt.Sprint(body.Message.Chat.ID), body.Message.Chat.Firstname)
+	if err != nil {
 		fmt.Println("error in sending reply:", err)
 		return
 	}
 	fmt.Println("reply sent")
 }
 
-func sayHello(chatID string) error {
-	res, err := http.Get(fmt.Sprintf("https://api.telegram.org/bot%s/sendMessage?chat_id=%s&text=%s", token, chatID, "hello"))
+func fileReader(filename string) (err error) {
+
+	data, err := ioutil.ReadFile(filename)
 	if err != nil {
 		return err
 	}
-	if res.StatusCode != http.StatusOK {
-		return errors.New("unexpected status" + res.Status)
-	}
+	TOKEN = strings.Trim(fmt.Sprint(strings.Split(string(data), "=")[1]), " ")
 	return nil
 }
 
-// func fileReader(filename string) {
-
-// 	data, err := ioutil.ReadFile(filename)
-// 	if err != nil {
-// 		fmt.Println("File reading error", err)
-// 		return
-// 	}
-// 	token = fmt.Sprint(strings.Split(string(data), "=")[1])
-// }
-
 func main() {
 
-	err := godotenv.Load("env.txt")
+	// // uncomment for local development
+	// err := godotenv.Load()
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
+	// TOKEN = os.Getenv("TOKEN")
+
+	err := fileReader(".env")
 	if err != nil {
-		panic(err)
+		fmt.Println("error in reading file", err)
+		return
 	}
-
-	token = os.Getenv("TOKEN")
-
-	fmt.Println(token)
-	http.ListenAndServe(":3000", http.HandlerFunc(Handler))
+	fmt.Println(TOKEN)
+	http.ListenAndServe(":8080", http.HandlerFunc(Handler))
 }

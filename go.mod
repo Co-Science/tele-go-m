@@ -1,5 +1,4 @@
 module github.com/Co-Science/tele-go-m
 
-go 1.15
-
-require github.com/joho/godotenv v1.3.0 // indirect
+// +heroku goVersion go1.17
+go 1.17
