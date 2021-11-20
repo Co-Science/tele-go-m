@@ -70,11 +70,12 @@ func main() {
 	// }
 	// TOKEN = os.Getenv("TOKEN")
 
-	err := fileReader(".env")
-	if err != nil {
-		fmt.Println("error in reading file", err)
-		return
-	}
+	// // or uncomment for local development [any one of the two]
+	// err := fileReader(".env")
+	// if err != nil {
+	// 	fmt.Println("error in reading file", err)
+	// 	return
+	// }
 	fmt.Println(TOKEN)
 	http.ListenAndServe(":8080", http.HandlerFunc(Handler))
 }
