@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	// "io/ioutil"
 	"net/http"
 	"os"
 	"strings"
@@ -23,6 +22,17 @@ type webhookReqBody struct {
 	} `json:"message"`
 }
 
+func sayHello(chatID string) error {
+	res, err := http.Get(fmt.Sprintf("https://api.telegram.org/bot%s/sendMessage?chat_id=%s&text=%s", token, chatID, "hello"))
+	if err != nil {
+		return err
+	}
+	if res.StatusCode != http.StatusOK {
+		return errors.New("unexpected status" + res.Status)
+	}
+	return nil
+}
+
 func Handler(res http.ResponseWriter, req *http.Request) {
 	body := &webhookReqBody{}
 	if err := json.NewDecoder(req.Body).Decode(body); err != nil {
@@ -39,30 +49,9 @@ func Handler(res http.ResponseWriter, req *http.Request) {
 	fmt.Println("reply sent")
 }
 
-func sayHello(chatID string) error {
-	res, err := http.Get(fmt.Sprintf("https://api.telegram.org/bot%s/sendMessage?chat_id=%s&text=%s", token, chatID, "hello"))
-	if err != nil {
-		return err
-	}
-	if res.StatusCode != http.StatusOK {
-		return errors.New("unexpected status" + res.Status)
-	}
-	return nil
-}
-
-// func fileReader(filename string) {
-
-// 	data, err := ioutil.ReadFile(filename)
-// 	if err != nil {
-// 		fmt.Println("File reading error", err)
-// 		return
-// 	}
-// 	token = fmt.Sprint(strings.Split(string(data), "=")[1])
-// }
-
 func main() {
 
-	err := godotenv.Load("env.txt")
+	err := godotenv.Load()
 	if err != nil {
 		panic(err)
 	}

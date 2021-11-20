@@ -1,5 +1,10 @@
 # tele-go-m
-telegram bot for Gophers (the webhook style)
+telegram bot in go (using webhook)
+
+
+<details>
+  <summary>Beginner's guide for telegram bot </summary>
+<!--START_SECTION:waka-->
 
 ## How to make the best use of tele-go-m
 
@@ -7,37 +12,37 @@ telegram bot for Gophers (the webhook style)
 
 What you already did that ? Huh well i guess that all there is then... 
 
-You now have a real class telegram bot on your hand. Now all you have to do is clone this repo and use it as ur own
+We have added the basic backend code to run your bot, you can clone this repo and use it as you'r own
 
 ```
 git clone https://github.com/Co-Science/tele-go-m.git
 cd tele-go-m
+```
+
+But before you begin create a `.env` file to the root directory and add your bot api key for testing:
+```
+TOKEN=<add your_bot_token here>
+```
+Now run the code:
+```
 go run main.go
 ```
 
-- Thats it we did all the work you need to get started but its not done yet. The program now listens on port 3000 for some request.
+- The program now listens on port 3000 for some request.
 
-- There is no use of localhost:3000 unless it can communicate with the outside world so usse [ngrok](https://ngrok.com/) to do that.
+- Make use of [ngrok](https://ngrok.com/) to test your bot locally.
+```
+ngrok http 3000
+```
 
 - Now set your bots webhook to that url
 ```
 https://api.telegram.org/bot<your_bot_token>/setWebhook?url=<your_https_url_ngrok_provides>
 ```
+| this is essentially connecting your bot with the telegram server 
 
 __Congratss__ Your bot is not ready to chat with you. Just type telegom or any letter in it and the bot replies with hello.
 
-> You can edit or modify this as you wish
+<!--END_SECTION:waka-->
+</details>	
 
-- Now to remove the webhook url just type 
-
-```
-https://api.telegram.org/bot<your_bot_token>/deleteWebhook
-```
-
-## Star's what are they?
-
-![stars_in_github](./Resources/img/starts.png)
-
-Starts are the way to determine the popularity of a repo.
-
-Dont forget to ⭐ us if you like what u see 😉
