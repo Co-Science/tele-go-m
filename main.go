@@ -4,9 +4,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"strings"
+
+	"github.com/gorilla/mux"
 )
 
 var TOKEN string
@@ -49,6 +52,7 @@ func Handler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 	fmt.Println("reply sent")
+	res.Write([]byte("Gorilla!\n"))
 }
 
 func main() {
@@ -61,5 +65,11 @@ func main() {
 	TOKEN = os.Getenv("TOKEN")
 
 	fmt.Println(TOKEN)
-	http.ListenAndServe(":8000", http.HandlerFunc(Handler))
+
+	r := mux.NewRouter()
+	r.HandleFunc("/", Handler)
+
+	log.Fatal(http.ListenAndServe(":8000", r))
+
+	// http.ListenAndServe(":8000", http.HandlerFunc(Handler))
 }
