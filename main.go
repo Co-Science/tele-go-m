@@ -51,16 +51,6 @@ func Handler(res http.ResponseWriter, req *http.Request) {
 	fmt.Println("reply sent")
 }
 
-func fileReader(filename string) (err error) {
-
-	data, err := ioutil.ReadFile(filename)
-	if err != nil {
-		return err
-	}
-	TOKEN = strings.Trim(fmt.Sprint(strings.Split(string(data), "=")[1]), " ")
-	return nil
-}
-
 func main() {
 
 	// // uncomment for local development
@@ -68,14 +58,8 @@ func main() {
 	// if err != nil {
 	// 	fmt.Println(err)
 	// }
-	// TOKEN = os.Getenv("TOKEN")
+	TOKEN = os.Getenv("TOKEN")
 
-	// // or uncomment for local development [any one of the two]
-	// err := fileReader(".env")
-	// if err != nil {
-	// 	fmt.Println("error in reading file", err)
-	// 	return
-	// }
 	fmt.Println(TOKEN)
 	http.ListenAndServe(":8080", http.HandlerFunc(Handler))
 }
