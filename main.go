@@ -11,7 +11,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
-var token, chat_id string
+var TOKEN string
 
 type webhookReqBody struct {
 	Message struct {
@@ -23,7 +23,8 @@ type webhookReqBody struct {
 }
 
 func sayHello(chatID string) error {
-	res, err := http.Get(fmt.Sprintf("https://api.telegram.org/bot%s/sendMessage?chat_id=%s&text=%s", token, chatID, "hello"))
+	url := fmt.Sprintf("https://api.telegram.org/bot%s/sendMessage?chat_id=%s&text=%s", TOKEN, chatID, "hello")
+	res, err := http.Get(url)
 	if err != nil {
 		return err
 	}
@@ -42,7 +43,8 @@ func Handler(res http.ResponseWriter, req *http.Request) {
 	if !strings.ContainsAny(strings.ToLower(body.Message.Text), "telegom") {
 		return
 	}
-	if err := sayHello(fmt.Sprint(body.Message.Chat.ID)); err != nil {
+	err := sayHello(fmt.Sprint(body.Message.Chat.ID))
+	if err != nil {
 		fmt.Println("error in sending reply:", err)
 		return
 	}
@@ -53,11 +55,11 @@ func main() {
 
 	err := godotenv.Load()
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
 	}
 
-	token = os.Getenv("TOKEN")
+	TOKEN = os.Getenv("TOKEN")
 
-	fmt.Println(token)
+	fmt.Println(TOKEN)
 	http.ListenAndServe(":3000", http.HandlerFunc(Handler))
 }
