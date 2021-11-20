@@ -63,5 +63,5 @@ func main() {
 	TOKEN = os.Getenv("TOKEN")
 
 	fmt.Println(TOKEN)
-	http.ListenAndServe(":3000", http.HandlerFunc(Handler))
+	http.ListenAndServe(":8080", http.HandlerFunc(Handler))
 }
