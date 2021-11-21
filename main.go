@@ -34,6 +34,7 @@ type webhookReqBody struct {
 	} `json:"message"`
 }
 
+// reply to a specific user
 func sayHello(chatID, user string) error {
 	randomIndex := rand.Intn(len(EASTEREGG))
 	url := ""
@@ -51,17 +52,7 @@ func sayHello(chatID, user string) error {
 	return nil
 }
 
-func sayCustomHelloWithName(chatID, text, user string) error {
-	url := fmt.Sprintf("https://api.telegram.org/bot%s/sendMessage?chat_id=%s&text=%s", TOKEN, chatID, text+user)
-	res, err := http.Get(url)
-	if err != nil {
-		return err
-	} else if res.StatusCode != http.StatusOK {
-		return errors.New("unexpected status" + res.Status)
-	}
-	return nil
-}
-
+// general reply
 func sayCustomHelloWithoutName(chatID, text string) error {
 	url := fmt.Sprintf("https://api.telegram.org/bot%s/sendMessage?chat_id=%s&text=%s", TOKEN, chatID, text)
 	res, err := http.Get(url)
@@ -72,6 +63,8 @@ func sayCustomHelloWithoutName(chatID, text string) error {
 	}
 	return nil
 }
+
+// timetable
 func tt() string {
 	var response string = "TT is up and ready on a "
 	if string(time.Now().Weekday()) == "Saturday" {
@@ -80,6 +73,7 @@ func tt() string {
 	return response
 }
 
+// Function to handle the request \o/
 func Handler(res http.ResponseWriter, req *http.Request) {
 	body := &webhookReqBody{}
 	if err := json.NewDecoder(req.Body).Decode(body); err != nil {
@@ -87,7 +81,7 @@ func Handler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	// checks if the string contains telegom
+	// checks if the string contains 'telegom'
 	if strings.Contains(strings.ToLower(body.Message.Text), "telegom") {
 		err := sayHello(fmt.Sprint(body.Message.Chat.ID), body.Message.Chat.Firstname)
 		if err != nil {
@@ -125,6 +119,6 @@ func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/", Handler)
 
-	fmt.Println("listening on http://localhost:" + PORT + " || http://0.0.0.0:" + PORT)
+	fmt.Println("use ngrok on http://localhost:" + PORT + " || http://0.0.0.0:" + PORT)
 	log.Fatal(http.ListenAndServe(":"+PORT, r))
 }
