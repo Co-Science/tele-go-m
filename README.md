@@ -41,12 +41,6 @@ https://api.telegram.org/bot<your_bot_token>/setWebhook?url=<your_https_url_ngro
 
 __Congratss__ Your bot is now ready to chat with you(locally). Just type telegom or any letter in it and see the bot reply.
 
-- To remove the webhook url just type 
-
-```
-https://api.telegram.org/bot<your_bot_token>/deleteWebhook
-```
-
 <!--END_SECTION:waka-->
 </details>	
 
