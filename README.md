@@ -50,3 +50,4 @@ https://api.telegram.org/bot<your_bot_token>/deleteWebhook
 <!--END_SECTION:waka-->
 </details>	
 
+Edit and Deploy it in [heroku](https://devcenter.heroku.com/articles/getting-started-with-go?singlepage=true) or with any cloud provider to use the bot.
