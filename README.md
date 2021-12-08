@@ -39,7 +39,7 @@ https://api.telegram.org/bot<your_bot_token>/setWebhook?url=<your_https_url_ngro
 ```
 | this is essentially connecting your bot with the telegram server 
 
-__Congratss__ Your bot is not ready to chat with you. Just type telegom or any letter in it and the bot replies with hello.
+__Congratss__ Your bot is now ready to chat with you(locally). Just type telegom or any letter in it and see the bot reply.
 
 - To remove the webhook url just type 
 
