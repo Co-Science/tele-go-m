@@ -8,9 +8,7 @@ telegram bot in go (using webhook)
 
 ## How to make the best use of tele-go-m
 
-- Well why dont u start with [botfather](https://t.me/botfather) . He is the one to meet if you need any bots around here 🙃
-
-What you already did that ? Huh well i guess that all there is then... 
+- To start with this, meet [botfather](https://t.me/botfather) .
 
 We have added the basic backend code to run your bot, you can clone this repo and use it as you'r own
 
